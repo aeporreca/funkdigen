@@ -7,6 +7,7 @@
 
 from argparse import ArgumentParser
 from timeit import default_timer
+from typing import Callable
 
 
 # Types of the data structures we use
@@ -256,7 +257,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     n = args.size
     if args.connected:
-        generate = components
+        generate: Callable = components
     else:
         generate = funcdigraphs
     start = default_timer()
