@@ -14,6 +14,10 @@ The output format is described in the [paper](https://doi.org/10.48550/arXiv.230
 - Each connected functional digraph code is the lexicographically minimal rotation of the list of the codes of its trees.
 - The code of a tree $T$ is the list obtained by concatenating $[n]$ with $t_1, \ldots, t_k$, where $[n]$ is the singleton list containing the number $n$ of nodes of $T$, and $t_1, \ldots, t_k$ are the codes (computed recursively) of its immediate subtrees in lexicographic order.
 
+## Installation
+
+Just download the code from the [Releases](https://github.com/aeporreca/funkdigen/releases) page (or clone this repository if you want the latest changes). Python 3.9 is needed in order to run `funkdigen`.
+
 ## Usage
 
 ```
