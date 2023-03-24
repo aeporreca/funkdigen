@@ -23,7 +23,7 @@
 
 from argparse import ArgumentParser
 from timeit import default_timer
-from typing import Callable
+from sys import stderr
 
 
 # Types of the data structures we use
@@ -168,15 +168,17 @@ def component_successor(C: Component) -> Component:
 
 # Generate all components (connected functional digraphs) of n vertices
 
-def components(n: int) -> list[Component]:
+def components(n: int) -> int:
     if n == 0:
-        return []
-    result = []
+        return 0
+    count = 0
     C = cycle(n)
     while component_size(C) == n:
-        result.append(C)
+        if not args.quiet:
+            print(f'[{C}]')
+        count += 1
         C = component_successor(C)
-    return result
+    return count
 
 
 # Return the number of vertices of a functional digraph
@@ -247,13 +249,15 @@ def funcdigraph_successor(G: FuncDigraph) -> FuncDigraph:
 
 # Generate all functional digraphs of n vertices
 
-def funcdigraphs(n: int) -> list[FuncDigraph]:
-    result = []
+def funcdigraphs(n: int) -> int:
+    count = 0
     G = loops(n)
     while funcdigraph_size(G) == n:
-        result.append(G)
+        if not args.quiet:
+            print(G)
+        count += 1
         G = funcdigraph_successor(G)
-    return result
+    return count
 
 
 # Command line interface
@@ -262,31 +266,27 @@ if __name__ == '__main__':
     parser = ArgumentParser(
         description='Generate all functional digraphs up to isomorphism'
     )
-    parser.add_argument('size', metavar='size', type=int,
-                        help='number of vertices')
     parser.add_argument(
-        '-c', '--connected', '--component', action='store_true',
-        help='only generate components (connected digraphs)')
+        'size', metavar='size', type=int, help='number of vertices'
+    )
     parser.add_argument(
-        '-t', '--time', action='store_true',
-        help='measure time without printing the generated digraphs')
+        '-c', '--connected', action='store_true',
+        help='only generate connected digraphs'
+    )
+    parser.add_argument(
+        '-q', '--quiet', action='store_true',
+        help='do not print the generated digraphs'
+    )
+    parser.add_argument(
+        '-V', '--version', action='version', version='%(prog)s 1.1'
+    )
     args = parser.parse_args()
     n = args.size
-    if args.connected:
-        generate: Callable = components
-    else:
-        generate = funcdigraphs
     start = default_timer()
-    result = generate(n)
-    end = default_timer()
-    if args.time:
-        ndigraphs = len(result)
-        print(f'{ndigraphs} digraphs generated in', end=' ')
-        time = end - start
-        if time < 0.01:
-            print(f'{time * 1000:.2f} ms')
-        else:
-            print(f'{time:.2f} s')
+    if args.connected:
+        count = components(n)
     else:
-        for X in result:
-            print(X)
+        count = funcdigraphs(n)
+    end = default_timer()
+    time = end - start
+    print(f'{count} digraphs generated in {time:.2f} s', file=stderr)
