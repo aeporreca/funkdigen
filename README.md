@@ -21,16 +21,16 @@ Just download the code from the [Releases](https://github.com/aeporreca/funkdige
 ## Usage
 
 ```
-usage: funkdigen.py [-h] [-c] [-t] size
+usage: funkdigen.py [-h] [-c] [-q] [-V] size
 
 Generate all functional digraphs up to isomorphism
 
 positional arguments:
-  size                  number of vertices
+  size             number of vertices
 
 options:
-  -h, --help            show this help message and exit
-  -c, --connected, --component
-                        only generate components (connected digraphs)
-  -t, --time            measure time without printing the generated digraphs
+  -h, --help       show this help message and exit
+  -c, --connected  only generate connected digraphs
+  -q, --quiet      do not print the generated digraphs
+  -V, --version    show program's version number and exit
 ```
