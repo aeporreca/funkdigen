@@ -1,9 +1,10 @@
+> **Warning**
+> `funkdigen` is asymptotically efficient, but not efficient in terms of raw execution time, being rather a straightforward implementation in Python of the algorithms described in the the paper below. If you want efficiency, as well as an output format compatible with [established software](https://pallini.di.uniroma1.it), please use [`funkdigen2`](https://github.com/aeporreca/funkdigen2) instead!
+
+
 # funkdigen
 
 An proof-of-concept generator of functional digraphs (uniform outdegree 1) up to isomorphism, also called mapping patterns, finite (endo)functions, or finite dynamical systems; see sequence [A001372](https://oeis.org/A001372) on the [OEIS](https://oeis.org). It is also possible to only generate *connected* functional digraphs (sequence [A002861](https://oeis.org/A002861) on the OEIS).
-
-> **Warning**
-> `funkdigen` is asymptotically efficient, but not efficient in terms of raw execution time, being rather a straightforward implementation in Python of the algorithms described in the the paper below. If you want efficiency, as well as an output format compatible with [established sofware](https://pallini.di.uniroma1.it), please use [`funkdigen2`](https://github.com/aeporreca/funkdigen2) instead!
 
 
 ## Background
