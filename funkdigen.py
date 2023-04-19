@@ -262,31 +262,30 @@ def funcdigraphs(n: int) -> int:
 
 # Command line interface
 
-if __name__ == '__main__':
-    parser = ArgumentParser(
-        description='Generate all functional digraphs up to isomorphism'
-    )
-    parser.add_argument(
-        'size', metavar='size', type=int, help='number of vertices'
-    )
-    parser.add_argument(
-        '-c', '--connected', action='store_true',
-        help='only generate connected digraphs'
-    )
-    parser.add_argument(
-        '-q', '--quiet', action='store_true',
-        help='do not print the generated digraphs'
-    )
-    parser.add_argument(
-        '-V', '--version', action='version', version='%(prog)s 1.1'
-    )
-    args = parser.parse_args()
-    n = args.size
-    start = default_timer()
-    if args.connected:
-        count = components(n)
-    else:
-        count = funcdigraphs(n)
-    end = default_timer()
-    time = end - start
-    print(f'{count} digraphs generated in {time:.2f} s', file=stderr)
+parser = ArgumentParser(
+    description='Generate all functional digraphs up to isomorphism'
+)
+parser.add_argument(
+    'size', metavar='size', type=int, help='number of vertices'
+)
+parser.add_argument(
+    '-c', '--connected', action='store_true',
+    help='only generate connected digraphs'
+)
+parser.add_argument(
+    '-q', '--quiet', action='store_true',
+    help='do not print the generated digraphs'
+)
+parser.add_argument(
+    '-V', '--version', action='version', version='%(prog)s 1.1'
+)
+args = parser.parse_args()
+n = args.size
+start = default_timer()
+if args.connected:
+    count = components(n)
+else:
+    count = funcdigraphs(n)
+end = default_timer()
+time = end - start
+print(f'{count} digraphs generated in {time:.2f} s', file=stderr)
