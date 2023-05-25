@@ -44,6 +44,6 @@ options:
 ```
 
 
-## Authors and license
+## Credits
 
-The `funkdigen` software is copyright © 2023 by [Antonio E. Porreca](https://aeporreca.org) and [Ekaterina Timofeeva](https://www.linkedin.com/in/ektim239), and its source code is distributed under the GNU GPL 3.0 license.
+The `funkdigen` software is copyright © 2023 by [Antonio E. Porreca](https://aeporreca.org) and [Ekaterina Timofeeva](https://www.linkedin.com/in/ektim239), and its source code is distributed under the GNU GPL 3.0 license. The development has been partly funded by the French [ANR](https://anr.fr) projet [FANs ANR-18-CE40-0002 (Foundations of Automata Networks)](http://sylvain.sene.pages.lis-lab.fr/fans/).
