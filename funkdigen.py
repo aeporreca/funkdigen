@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 # funkdigen
-# Copyright (C) 2023 Oscar Defrain, Antonio E. Porreca, Ekaterina
-# Timofeeva
+# Copyright (C) 2024 Antonio E. Porreca, Ekaterina Timofeeva
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# A generator of functional digraphs up to isomorphism. Based on Oscar
-# Defrain, Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay
-# generation of functional digraphs up to isomorphism,
-# arXiv:2302.13832, 2023, https://doi.org/10.48550/arXiv.2302.13832
+# A generator of functional digraphs up to isomorphism. Based on
+# Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay generation
+# of functional digraphs up to isomorphism, arXiv:2302.13832, 2023,
+# https://doi.org/10.48550/arXiv.2302.13832
 
 
 from argparse import ArgumentParser
@@ -52,20 +51,6 @@ def generate(fst):
             i = backtrack(cur) + 1
             cur = parent(cur)
             dep = 1 - dep
-
-
-def components(n):
-    if n == 0:
-        return 0
-    F = first(n)
-    if not args.quiet:
-        print(f'[F]')
-    count = 1
-    for C in generate(F):
-        count += 1
-        if not args.quiet:
-            print(f'[{C}]')
-    return count
 
 
 # Code for computing the successor
@@ -257,8 +242,6 @@ def unmerge(T):
     return T1, T2
 
 
-# Arbitrary functional digraphs
-
 def partitions(n):
     # Algorithm by Jerome Kelleher, Barry O'Sullivan
     # https://arxiv.org/pdf/0909.2331
@@ -278,6 +261,22 @@ def partitions(n):
             k = k + 1
         a[k] = x + y
         yield a[:k+1]
+
+
+# Generation of functional digraphs
+
+def components(n):
+    if n == 0:
+        return 0
+    F = first(n)
+    if not args.quiet:
+        print(f'[F]')
+    count = 1
+    for C in generate(F):
+        count += 1
+        if not args.quiet:
+            print(f'[{C}]')
+    return count
 
 
 def funcdigraphs(n):
