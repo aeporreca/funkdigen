@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 # funkdigen
-# Copyright (C) 2023 Antonio E. Porreca, Ekaterina Timofeeva
+# Copyright (C) 2023 Oscar Defrain, Antonio E. Porreca, Ekaterina
+# Timofeeva
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,83 +17,195 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# A generator of functional digraphs up to isomorphism. Based on
-# Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay generation
-# of functional digraphs up to isomorphism, arXiv:2302.13832, 2023,
-# https://doi.org/10.48550/arXiv.2302.13832
+# A generator of functional digraphs up to isomorphism. Based on Oscar
+# Defrain, Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay
+# generation of functional digraphs up to isomorphism,
+# arXiv:2302.13832, 2023, https://doi.org/10.48550/arXiv.2302.13832
+
 
 from argparse import ArgumentParser
 from timeit import default_timer
 from sys import stderr
 
 
-# Types of the data structures we use
+# Generic code for reverse search
 
-Tree        = list[int]
-Component   = list[Tree]
-Partition   = list[int]
-FuncDigraph = list[Component]
-
-
-# Separator used to flatten components into lists of integers
-
-PREFIX = 0
-
-
-# Flatten a component (sequence of trees) into a list of integers by
-# prefixing the code of each tree by PREFIX
-
-def flatten(C: Component) -> list[int]:
-    flattened = []
-    for T in C:
-        flattened.append(PREFIX)
-        flattened += T
-    return flattened
-
-
-# Check if the given component (sequence of trees) is its own minimal
-# rotation with respect to lexicographic order. The algorithm is based
-# on "Lexicographically least circular substrings" by Kellogg S. Booth
-# (Information Processing Letters, 10(4), 1980, pages 240-242) and on
-# the errata published at https://www.cs.ubc.ca/~ksbooth/PUB/LCS.shtml
-
-def is_min_rotation(C: Component) -> bool:
-    L = flatten(C)
-    n = len(L)
-    f = [-1] * (2 * n)
-    k = 0
-    for j in range(1, 2 * n):
-        i = f[j - k - 1]
-        while i != -1 and L[j % n] != L[(k + i + 1) % n]:
-            if L[j % n] < L[(k + i + 1) % n]:
-                k = j - i - 1
-            i = f[i]
-        if i == -1 and L[j % n] != L[(k + i + 1) % n]:
-            if L[j % n] < L[(k + i + 1) % n]:
-                k = j
-            f[j - k] = -1
-        else:
-            f[j - k] = i + 1
-    return L[k:] + L[:k] == L
+def generate(fst):
+    i = 0
+    cur = fst
+    dep = 0
+    while cur != fst or i < nchildren(cur):
+        while i < nchildren(cur):
+            nxt = child(cur, i)
+            i = i + 1
+            if nxt is not None:
+                par = parent(nxt)
+                if par == cur:
+                    cur = nxt
+                    dep = 1 - dep
+                    if dep == 0:
+                        yield cur
+                    i = 0
+        if cur != fst:
+            if dep == 1:
+                yield cur
+            i = backtrack(cur) + 1
+            cur = parent(cur)
+            dep = 1 - dep
 
 
-# Merge a sequence of trees
+def components(n):
+    if n == 0:
+        return 0
+    F = first(n)
+    if not args.quiet:
+        print(f'[F]')
+    count = 1
+    for C in generate(F):
+        count += 1
+        if not args.quiet:
+            print(f'[{C}]')
+    return count
 
-def merge(trees: list[Tree]) -> Tree:
-    assert trees[0] == [1]
-    root = sum(T[0] for T in trees)
-    merged = [root]
-    n = len(trees)
-    for i in range(1, n):
-        merged += trees[i]
-    return merged
+
+# Code for computing the successor
+
+def successor(sol):
+    dep = depth(sol)
+    if dep == 0:
+        return (first_grandchild(sol) or
+                first_child(sol) or
+                next_sibling(sol) or
+                parent(sol))
+    else:
+        return (next_niece(sol) or
+                next_sibling(sol) or
+                next_aunt(sol) or
+                grandparent(sol))
 
 
-# Unmerge a tree into a sequence of trees
+def first_child(sol):
+    i = 0
+    while i < nchildren(sol):
+        cld = child(sol, i)
+        if cld is not None:
+            par = parent(cld)
+            if par == sol:
+                return cld
+        i = i + 1
+    return None
 
-def unmerge(T: Tree) -> list[Tree]:
+
+def first_grandchild(sol):
+    cld = first_child(sol)
+    if cld is None:
+        return None
+    return first_child(cld)
+
+
+def next_sibling(sol):
+    par = parent(sol)
+    if par is None:
+        return None
+    i = backtrack(sol) + 1
+    while i < nchildren(par):
+        sib = child(par, i)
+        if sib is not None:
+            par2 = parent(sib)
+            if par2 == par:
+                return sib
+        i = i + 1
+    return None
+
+
+def next_aunt(sol):
+    par = parent(sol)
+    if par is None:
+        return None
+    return next_sibling(par)
+
+
+def next_niece(sol):
+    sib = next_sibling(sol)
+    if sib is None:
+        return None
+    return first_child(sib)
+
+
+def grandparent(sol):
+    par = parent(sol)
+    if par is None:
+        return None
+    return parent(par)
+        
+
+# Problem-specific code
+
+def first(n):
+    return [[1]] * n
+
+
+def nchildren(C):
+    k = len(C)
+    return 2 * (k - 1)
+
+
+def child(C, i):
+    k = len(C)
+    if i < k - 1:
+        D = C[:i] + [merge(C[i], C[i+1])] + C[i+2:]
+        if is_valid_comp(D):
+            return D
+    elif k - 1 <= i < 2 * (k - 1):
+        j = i - (k - 1)
+        if C[j] != C[j+1]:
+            D = C[:j] + [merge(C[j+1], C[j])] + C[j+2:]
+            if is_valid_comp(D):
+                return D
+    return None
+
+
+def parent(C):
+    k = len(C)
+    for i in range(k):
+        if C[i] != [1]:
+            T1, T2 = unmerge(C[i])
+            if T1 <= T2:
+                D = C[:i] + [T1, T2] + C[i+1:]
+            else:
+                D = C[:i] + [T2, T1] + C[i+1:]
+            return D
+
+
+def backtrack(C):
+    k = len(C)
+    for i in range(k):
+        if C[i] != [1]:
+            T1, T2 = unmerge(C[i])
+            if T1 <= T2:
+                return i
+            else:
+                return i + k
+
+
+def depth(C):
+    d = sum(len(T) for T in C) - len(C)
+    return d % 2
+
+
+# Auxiliary code
+
+def is_sorted(A):
+    n = len(A)
+    for i in range(n - 1):
+        if A[i] > A[i + 1]:
+            return False
+    return True
+
+
+def subtrees(T):
     n = len(T)
-    trees = [[1]]
+    trees = []
     l = 1
     while l < n:
         r = l + T[l]
@@ -101,166 +214,101 @@ def unmerge(T: Tree) -> list[Tree]:
     return trees
 
 
-# Check if a sequence of trees is sorted in lexicographic order
+def is_valid_tree(T):
+    n = len(T)
+    if T[0] != n:
+        return False
+    subs = subtrees(T)
+    for S in subs:
+        if not is_valid_tree(S):
+            return False
+    return is_sorted(subs)
 
-def is_sorted(trees: list[Tree]) -> bool:
-    n = len(trees)
-    for i in range(n - 1):
-        if trees[i] > trees[i + 1]:
+
+def is_min_rotation(A):
+    # Naive implementation
+    n = len(A)
+    for i in range(1, n):
+        if A[i:] + A[:i] < A:
             return False
     return True
 
 
-# Compute the component-unmerge (c-unmerge)
-
-def c_unmerge(C: Component) -> Component | None:
-    k = len(C)
-    for h in range(k):
-        if C[h] != [1]:
-            return C[:h] + unmerge(C[h]) + C[h+1:]
-    return None
+def is_valid_comp(C):
+    for T in C:
+        if not is_valid_tree(T):
+            return False
+    return is_min_rotation(C)
 
 
-# Compute all merges of a given component
-
-def merges(C: Component) -> list[Component]:
-    k = len(C)
-    res = []
-    for l in range(k - 1):
-        for r in range(l + 2, k + 1):
-            if C[l] == [1]:
-                trees = C[l:r]
-                C_lr = C[:l] + [merge(trees)] + C[r:]
-                if (is_sorted(C[l:r]) and
-                    is_min_rotation(C_lr) and
-                    c_unmerge(C_lr) == C):
-                    res.append(C_lr)
-    return res
+def merge(T1, T2):
+    return [T1[0] + T2[0]] + T1[1:] + T2
 
 
-# Return the cycle of length n
-
-def cycle(n: int) -> Component:
-    return [[1]] * n
-
-
-# Return the number of vertices of a component
-
-def component_size(C: Component) -> int:
-    return sum(len(T) for T in C)
-
-
-# Compute the next component
-
-def component_successor(C: Component) -> Component:
-    merges_C = merges(C)
-    if merges_C != []:
-        return min(merges_C)
-    U = c_unmerge(C)
-    while U is not None:
-        merges_U = [M for M in merges(U) if M > C]
-        if merges_U != []:
-            return min(merges_U)
-        C = U
-        U = c_unmerge(C)
-    return cycle(component_size(C) + 1)
+def unmerge(T):
+    assert T != [1]
+    # Find the last subtree
+    n = len(T)
+    i = 1
+    while i + T[i] < n:
+        i += T[i]
+    T2 = T[i:]
+    T1 = [T[0] - T2[0]] + T[1:i]
+    return T1, T2
 
 
-# Generate all components (connected functional digraphs) of n vertices
+# Arbitrary functional digraphs
 
-def components(n: int) -> int:
+def partitions(n):
+    # Algorithm by Jerome Kelleher, Barry O'Sullivan
+    # https://arxiv.org/pdf/0909.2331
     if n == 0:
-        return 0
+        yield []
+        return
+    a = [0] * (n + 1)
+    k = 1
+    a[1] = n
+    while k != 0:
+        y = a[k] - 1
+        k = k - 1
+        x = a[k] + 1
+        while x <= y:
+            a[k] = x
+            y = y - x
+            k = k + 1
+        a[k] = x + y
+        yield a[:k+1]
+
+
+def funcdigraphs(n):
     count = 0
-    C = cycle(n)
-    while component_size(C) == n:
-        if not args.quiet:
-            print(f'[{C}]')
+    for part in partitions(n):
+        G = [first(i) for i in part]
         count += 1
-        C = component_successor(C)
-    return count
-
-
-# Return the number of vertices of a functional digraph
-
-def funcdigraph_size(G: FuncDigraph) -> int:
-    return sum(component_size(C) for C in G)
-
-
-# Return the graph consisting of n self-loops
-
-def loops(n: int) -> FuncDigraph:
-    return [[[1]]] * n
-
-
-# Compute the next partition of integer n in lexicographic order, if
-# it exists, otherwise the first partition of integer n + 1. The
-# algorithm is based on Algorithm 3.1 of "Generating all partitions: A
-# comparison of two encodings" by Jerome Kelleher and Barry
-# O'Sullivan, https://arxiv.org/abs/0909.2331
-
-def partition_successor(P: Partition) -> Partition:
-    n = sum(P)
-    if len(P) <= 1:
-        return [1] * (n + 1)
-    k = len(P) - 1
-    P = P + [0] * (n - len(P))
-    y = P[k] - 1
-    k = k - 1
-    x = P[k] + 1
-    while x <= y:
-        P[k] = x
-        y = y - x
-        k = k + 1
-    P[k] = x + y
-    return P[0:k+1]
-
-
-# Compute the integer partition corresponding to a given functional digraph
-
-def partition(G: FuncDigraph) -> Partition:
-    return [component_size(C) for C in G]
-
-
-# Compute the next functional digraph
-
-def funcdigraph_successor(G: FuncDigraph) -> FuncDigraph:
-    m = len(G)
-    h = m - 1
-    while h >= 0:
-        C = component_successor(G[h])
-        if component_size(C) == component_size(G[h]):
-            result = G[:h] + [C]
-            for i in range(h + 1, m):
-                if component_size(G[i]) == component_size(C):
-                    result.append(C)
-                else:
-                    result.append(cycle(component_size(G[i])))
-            return result
-        h = h - 1
-    P = partition(G)
-    Q = partition_successor(P)
-    n = sum(P)
-    if sum(Q) == n:
-        return [cycle(k) for k in Q]
-    else:
-        return loops(n + 1)
-
-
-# Generate all functional digraphs of n vertices
-
-def funcdigraphs(n: int) -> int:
-    count = 0
-    G = loops(n)
-    while funcdigraph_size(G) == n:
         if not args.quiet:
             print(G)
-        count += 1
-        G = funcdigraph_successor(G)
+        m = len(G)
+        found = True
+        while found:
+            found = False
+            for i in reversed(range(m)):
+                D = successor(G[i])
+                if D is not None:
+                    found = True
+                    G[i] = D
+                    for j in range(i+1, m):
+                        if part[j] == part[i]:
+                            G[j] = D
+                        else:
+                            G[j] = first(part[j])
+                    count += 1
+                    if not args.quiet:
+                        print(G)
+                    break
     return count
 
 
-# Command line interface
+# Command-line interface
 
 parser = ArgumentParser(
     description='Generate all functional digraphs up to isomorphism'
@@ -277,7 +325,7 @@ parser.add_argument(
     help='do not print the generated digraphs'
 )
 parser.add_argument(
-    '-V', '--version', action='version', version='%(prog)s 1.1'
+    '-V', '--version', action='version', version='%(prog)s 1.2'
 )
 args = parser.parse_args()
 n = args.size
