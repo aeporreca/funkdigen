@@ -270,7 +270,7 @@ def components(n):
         return 0
     F = first(n)
     if not args.quiet:
-        print(f'[F]')
+        print(f'[{F}]')
     count = 1
     for C in generate(F):
         count += 1
