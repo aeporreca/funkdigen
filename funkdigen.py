@@ -200,14 +200,7 @@ def subtrees(T):
 
 
 def is_valid_tree(T):
-    n = len(T)
-    if T[0] != n:
-        return False
-    subs = subtrees(T)
-    for S in subs:
-        if not is_valid_tree(S):
-            return False
-    return is_sorted(subs)
+    return is_sorted(subtrees(T))
 
 
 def is_min_rotation(A):
