@@ -200,6 +200,7 @@ def subtrees(T):
 
 
 def is_valid_tree(T):
+    # Assumes that the subtrees are valid
     return is_sorted(subtrees(T))
 
 
