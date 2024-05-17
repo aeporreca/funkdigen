@@ -33,9 +33,9 @@ def generate(fst):
     i = 0
     cur = fst
     dep = 0
-    while cur != fst or i < nchildren(cur):
-        while i < nchildren(cur):
-            nxt = child(cur, i)
+    while cur != fst or i < ncandidates(cur):
+        while i < ncandidates(cur):
+            nxt = candidate(cur, i)
             i = i + 1
             if nxt is not None:
                 par = parent(nxt)
@@ -71,8 +71,8 @@ def successor(sol):
 
 def first_child(sol):
     i = 0
-    while i < nchildren(sol):
-        cld = child(sol, i)
+    while i < ncandidates(sol):
+        cld = candidate(sol, i)
         if cld is not None:
             par = parent(cld)
             if par == sol:
@@ -93,8 +93,8 @@ def next_sibling(sol):
     if par is None:
         return None
     i = backtrack(sol) + 1
-    while i < nchildren(par):
-        sib = child(par, i)
+    while i < ncandidates(par):
+        sib = candidate(par, i)
         if sib is not None:
             par2 = parent(sib)
             if par2 == par:
@@ -130,12 +130,12 @@ def first(n):
     return [[1]] * n
 
 
-def nchildren(C):
+def ncandidates(C):
     k = len(C)
     return 2 * (k - 1)
 
 
-def child(C, i):
+def candidate(C, i):
     k = len(C)
     if i < k - 1:
         D = C[:i] + [merge(C[i], C[i+1])] + C[i+2:]
