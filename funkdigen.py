@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 # funkdigen
-# Copyright (C) 2024 Antonio E. Porreca, Ekaterina Timofeeva
+# Copyright (C) 2024 Oscar Defrain, Antonio E. Porreca,
+#                    Ekaterina Timofeeva
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
