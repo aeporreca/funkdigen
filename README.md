@@ -9,12 +9,12 @@ An proof-of-concept generator of functional digraphs (uniform outdegree 1) up to
 
 ## Background
 
-Based on Oscar Defrain, Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay generation of functional digraphs up to isomorphism, arXiv:2302.13832, 2024, https://doi.org/10.48550/arXiv.2302.13832
+Based on Oscar Defrain, Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay generation of functional digraphs up to isomorphism, _Discrete Applied Mathematics_ 357, 24–33, 2024, https://doi.org/10.48550/arXiv.2302.13832
 
 
 ## Output format
 
-The output format is described in the [paper](https://doi.org/10.48550/arXiv.2302.13832) itself. To summarise, keeping in mind that each connected component of a functional digraph consists of directed trees (with arcs pointing towards the root) with roots arranged along a limit cycle:
+The output format is described in the [paper](https://doi.org/10.1016/j.dam.2024.05.030) itself. To summarise, keeping in mind that each connected component of a functional digraph consists of directed trees (with arcs pointing towards the root) with roots arranged along a limit cycle:
 
 - Each functional digraph code is a list of the codes of its connected components in the lexicographic order induced by the algorithm for generating them.
 - Each connected functional digraph code is the lexicographically minimal rotation of the list of the codes of its trees.
