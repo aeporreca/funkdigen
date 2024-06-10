@@ -9,7 +9,7 @@ An proof-of-concept generator of functional digraphs (uniform outdegree 1) up to
 
 ## Background
 
-Based on Oscar Defrain, Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay generation of functional digraphs up to isomorphism, _Discrete Applied Mathematics_ 357, 24–33, 2024, https://doi.org/10.48550/arXiv.2302.13832
+Based on Oscar Defrain, Antonio E. Porreca, Ekaterina Timofeeva, Polynomial-delay generation of functional digraphs up to isomorphism, _Discrete Applied Mathematics_ 357, 24–33, 2024, https://doi.org/10.1016/j.dam.2024.05.030
 
 
 ## Output format
