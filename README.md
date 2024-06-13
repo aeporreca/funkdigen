@@ -1,5 +1,4 @@
-> **Warning**
-> `funkdigen`, although efficient from an asymptotic point of view, is not efficient in terms of raw execution time, being rather a straightforward implementation in Python of the algorithms described in the the paper below. If you want _real_ efficiency, as well as an output format compatible with [established software](https://pallini.di.uniroma1.it), please use [`funkdigen2`](https://github.com/aeporreca/funkdigen2) instead! 🙂
+> ⚠️ `funkdigen`, although efficient from an asymptotic point of view, is not efficient in terms of raw execution time, being rather a straightforward implementation in Python of the algorithms described in the the paper below. If you want _real_ efficiency, as well as an output format compatible with [established software](https://pallini.di.uniroma1.it), please use [`funkdigen2`](https://github.com/aeporreca/funkdigen2) instead! 🙂
 
 
 # funkdigen
